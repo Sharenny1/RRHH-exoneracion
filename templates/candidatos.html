@@ -1,34 +1,167 @@
-<table class="table table-hover table-striped">
-<thead class="table-dark">
-<tr>
-<th>Nombre</th>
-<th>Puesto</th>
-<th>Salario</th>
-<th>Estado</th>
-<th>Acciones</th>
-</tr>
-</thead>
-<tbody>
+{% extends "base.html" %}
+{% block content %}
 
-{% for c in candidatos %}
-<tr>
-<td>{{ c.nombre }}</td>
-<td>{{ c.puesto_aspira }}</td>
-<td>RD$ {{ "{:,.0f}".format(c.salario_aspira) }}</td>
-<td>
-    {% if c.estado == "Pendiente" %}
-        <span class="badge bg-warning">Pendiente</span>
-    {% else %}
-        <span class="badge bg-success">Seleccionado</span>
-    {% endif %}
-</td>
-<td>
-    <a href="/candidatos/seleccionar/{{ c.id }}" class="btn btn-sm btn-primary">
-        Seleccionar
-    </a>
-</td>
-</tr>
-{% endfor %}
+<div class="page-header">
+    <div>
+        <h2>Candidatos</h2>
+        <p>Gestión de candidatos del sistema</p>
+    </div>
 
+    <button type="button" class="btn-new" id="btnNuevoCandidato">
+        + Nuevo Candidato
+    </button>
+</div>
+
+<div class="table-card">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Cédula</th>
+                <th>Nombre</th>
+                <th>Puesto</th>
+                <th>Departamento</th>
+                <th>Salario</th>
+                <th>Estado</th>
+                {% if current_user.rol == "RH" %}
+                <th class="acciones-cell">Acciones</th>
+                {% endif %}
+            </tr>
+        </thead>
+
+        <tbody>
+    {% for c in candidatos %}
+    <tr>
+        <td>CND-{{ c.id }}</td>
+        <td>
+    {{ c.cedula[:3] }}-{{ c.cedula[3:10] }}-{{ c.cedula[10:] }}
+</td>
+
+        <td class="bold">{{ c.nombre }}</td>
+        <td>{{ c.puesto_aspira }}</td>
+        <td>{{ c.departamento }}</td>
+        <td>${{ "{:,.2f}".format(c.salario_aspira) }}</td>
+
+        <td>
+            {% if c.estado == "Pendiente" %}
+                <span class="badge-pending">Pendiente</span>
+            {% elif c.estado == "Contratado" %}
+                <span class="badge-hired">Contratado</span>
+            {% elif c.estado == "Rechazado" %}
+                <span class="badge-rejected">Rechazado</span>
+            {% else %}
+                <span class="badge-inactive">{{ c.estado }}</span>
+            {% endif %}
+        </td>
+
+        {% if current_user.rol == "RH" %}
+<td class="acciones-cell">
+    <div class="acciones-wrapper">
+
+        {% if c.estado == "Pendiente" %}
+            <a href="{{ url_for('candidato.seleccionar_candidato', id=c.id) }}"
+               class="icon-select"
+               title="Contratar">
+               <i class="fa-solid fa-user-check"></i>
+            </a>
+
+            <a href="{{ url_for('candidato.rechazar_candidato', id=c.id) }}"
+               class="icon-reject"
+               title="Rechazar">
+               <i class="fa-solid fa-user-xmark"></i>
+            </a>
+        {% else %}
+            <span style="color:#94a3b8; font-size:13px;">
+                Sin acciones
+            </span>
+        {% endif %}
+
+    </div>
+</td>
+{% endif %}
+
+
+    </tr>
+    {% endfor %}
 </tbody>
-</table>
+
+
+    </table>
+</div>
+<!-- MODAL -->
+<div class="modal" id="candidatoModal">
+    <div class="modal-content modal-large">
+
+        <button type="button" class="close-btn" onclick="closeCandidatoModal()">×</button>
+        <h3 id="candidatoModalTitle">Nuevo Candidato</h3>
+
+        <form method="POST">
+
+            <input type="hidden" name="id" id="candidatoId">
+
+            <div class="form-group">
+                <label>Cédula</label>
+                <input type="text" name="cedula" id="candidatoCedula" required>
+            </div>
+
+            <div class="form-group">
+                <label>Nombre</label>
+                <input type="text" name="nombre" id="candidatoNombre" required>
+            </div>
+
+            <div class="form-group">
+                <label>Puesto al que aspira</label>
+                <input type="text" name="puesto" id="candidatoPuesto" required>
+            </div>
+
+            <div class="form-group">
+                <label>Departamento</label>
+                <input type="text" name="departamento" id="candidatoDepto" required>
+            </div>
+
+            <div class="form-group">
+                <label>Salario al que aspira</label>
+                <input type="number" step="0.01" name="salario" id="candidatoSalario" required>
+            </div>
+
+            <div class="form-group">
+                <label>Competencias</label>
+                <textarea name="competencias" id="candidatoComp"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>Capacitaciones</label>
+                <textarea name="capacitaciones" id="candidatoCap"></textarea>
+            </div>
+
+            
+
+            <div class="form-group">
+                <label>Recomendado por</label>
+                <input type="text" name="recomendado" id="candidatoRec">
+            </div>
+
+            {% if current_user.rol == "RH" %}
+            <div class="form-group">
+                <label>Estado</label>
+                <select name="estado" id="candidatoEstado">
+    <option value="Pendiente">Pendiente</option>
+    <option value="Contratado">Contratado</option>
+    <option value="Activo">Activo</option>
+    <option value="Inactivo">Inactivo</option>
+    <option value="Rechazado">Rechazado</option>
+</select>
+
+            </div>
+            {% endif %}
+
+            <button type="submit" class="btn-primary">Guardar</button>
+
+        </form>
+
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/candidatos.js') }}"></script>
+
+{% endblock %}

@@ -1,12 +1,16 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required
 from models import db, Idioma
+from utils import solo_rh
+
+
 
 idioma_bp = Blueprint("idioma", __name__)
 
 
 @idioma_bp.route("/idiomas", methods=["GET", "POST"])
 @login_required
+@solo_rh
 def idiomas():
 
     # CREAR o EDITAR
@@ -37,6 +41,7 @@ def idiomas():
 
 @idioma_bp.route("/idiomas/eliminar/<int:id>", methods=["POST"])
 @login_required
+@solo_rh
 def eliminar_idioma(id):
     idioma = Idioma.query.get_or_404(id)
     db.session.delete(idioma)

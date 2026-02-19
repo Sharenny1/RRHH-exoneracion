@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <title>RRHH System</title>
-    <script src="https://unpkg.com/feather-icons"></script>
-    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
 
-
+    <!-- Tus estilos -->
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
 </head>
 
 <body>
@@ -17,89 +17,116 @@
 
     {% if current_user.is_authenticated %}
 
-        <!-- SIDEBAR -->
-        <div class="sidebar">
+    <!-- SIDEBAR -->
+    <div class="sidebar">
 
-    <div class="sidebar-top">
-        <div class="sidebar-header">
-            <div class="logo-icon">👥</div>
-            <div>
-                <div class="logo-title">RRHH System</div>
-                <div class="logo-sub">Universidad APEC</div>
+        <div class="sidebar-top">
+
+            <!-- HEADER -->
+            <div class="sidebar-header">
+                <div class="logo-icon">👥</div>
+                <div>
+                    <div class="logo-title">RRHH System</div>
+                    <div class="logo-sub">Universidad APEC</div>
+                </div>
+            </div>
+
+            <!-- MENU -->
+            <nav class="sidebar-menu">
+
+                {% if current_user.rol == "RH" %}
+
+                    <a href="{{ url_for('dashboard.dashboard') }}"
+                       class="menu-item {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-chart-line"></i></span>
+                        Dashboard
+                    </a>
+
+                    <a href="{{ url_for('candidato.candidatos') }}"
+                       class="menu-item {% if request.endpoint == 'candidato.candidatos' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-user-tie"></i></span>
+                        Candidatos
+                    </a>
+
+                    <!-- ✅ EXPERIENCIA AGREGADO PARA RH -->
+                    <a href="{{ url_for('experiencia.experiencias') }}"
+                       class="menu-item {% if request.endpoint == 'experiencia.experiencias' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-briefcase"></i></span>
+                        Experiencia
+                    </a>
+
+                    <a href="{{ url_for('competencia.competencias') }}"
+                       class="menu-item {% if request.endpoint == 'competencia.competencias' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-bullseye"></i></span>
+                        Competencias
+                    </a>
+
+                    <a href="{{ url_for('idioma.idiomas') }}"
+                       class="menu-item {% if request.endpoint == 'idioma.idiomas' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-globe"></i></span>
+                        Idiomas
+                    </a>
+
+                    <a href="{{ url_for('puesto.puestos') }}"
+                       class="menu-item {% if request.endpoint == 'puesto.puestos' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-briefcase"></i></span>
+                        Puestos
+                    </a>
+
+                    <a href="{{ url_for('empleado.empleados') }}"
+                       class="menu-item {% if request.endpoint == 'empleado.empleados' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-id-badge"></i></span>
+                        Empleados
+                    </a>
+
+                    <a href="{{ url_for('empleado.reporte_nuevo_ingreso') }}"
+   class="menu-item {% if request.endpoint == 'empleado.reporte_nuevo_ingreso' %}active{% endif %}">
+    <span class="icon"><i class="fa-solid fa-file-lines"></i></span>
+    Reporte Ingresos
+</a>
+
+
+                {% elif current_user.rol == "POSTULANTE" %}
+
+                    <a href="{{ url_for('candidato.candidatos') }}"
+                       class="menu-item {% if request.endpoint == 'candidato.candidatos' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-user"></i></span>
+                        Candidatos
+                    </a>
+
+                    <a href="{{ url_for('experiencia.experiencias') }}"
+                       class="menu-item {% if request.endpoint == 'experiencia.experiencias' %}active{% endif %}">
+                        <span class="icon"><i class="fa-solid fa-briefcase"></i></span>
+                        Experiencia
+                    </a>
+
+                {% endif %}
+
+            </nav>
+        </div>
+
+        <!-- FOOTER -->
+        <div class="sidebar-footer">
+            <a href="{{ url_for('auth.logout') }}" class="logout-btn">
+                <i class="fa-solid fa-right-from-bracket"></i>
+                Cerrar sesión
+            </a>
+
+            <div class="footer-text">
+                Proyecto Final — Prof. Juan P. Valdez
             </div>
         </div>
 
-        <nav class="sidebar-menu">
-            <a href="{{ url_for('dashboard.dashboard') }}"
-               class="menu-item {% if request.endpoint == 'dashboard.dashboard' %}active{% endif %}">
-                <span class="icon">📊</span>
-                Dashboard
-            </a>
-
-            <a href="{{ url_for('competencia.competencias') }}"
-               class="menu-item {% if request.endpoint == 'competencia.competencias' %}active{% endif %}">
-                <span class="icon">🎯</span>
-                Competencias
-            </a>
-
-            <a href="{{ url_for('idioma.idiomas') }}"
-               class="menu-item {% if request.endpoint == 'idioma.idiomas' %}active{% endif %}">
-                <span class="icon">🌎</span>
-                Idiomas
-            </a>
-
-            <a href="{{ url_for('capacitacion.capacitaciones') }}"
-               class="menu-item {% if request.endpoint == 'capacitacion.capacitaciones' %}active{% endif %}">
-                <span class="icon">🎓</span>
-                Capacitaciones
-            </a>
-
-            <a href="{{ url_for('puesto.puestos') }}"
-               class="menu-item {% if request.endpoint == 'puesto.puestos' %}active{% endif %}">
-                <span class="icon">💼</span>
-                Puestos
-            </a>
-
-            <a href="{{ url_for('candidato_bp.listar_candidatos') }}"
-               class="menu-item {% if request.endpoint == 'candidato_bp.listar_candidatos' %}active{% endif %}">
-                <span class="icon">🧑‍💼</span>
-                Candidatos
-            </a>
-
-            <a href="{{ url_for('empleado.empleados') }}"
-               class="menu-item {% if request.endpoint == 'empleado.empleados' %}active{% endif %}">
-                <span class="icon">👨‍💻</span>
-                Empleados
-            </a>
-        </nav>
     </div>
-
-    <!-- FOOTER -->
-    <div class="sidebar-footer">
-        <a href="{{ url_for('auth.logout') }}" class="logout-btn">
-            <i class="fa-solid fa-right-from-bracket"></i>
-            Cerrar sesión
-        </a>
-
-        <div class="footer-text">
-            Proyecto Final — Prof. Juan P. Valdez
-        </div>
-    </div>
-
-</div>
-
 
     {% endif %}
 
-    <!-- CONTENT (solo una vez) -->
+    <!-- CONTENT -->
     <div class="content">
         {% block content %}{% endblock %}
     </div>
 
 </div>
-<script>
-feather.replace()
-</script>
 
 </body>
 </html>

@@ -1,12 +1,15 @@
 from flask import Blueprint, render_template, request, redirect, url_for
 from flask_login import login_required
 from models import db, Competencia
+from utils import solo_rh
+
 
 competencia_bp = Blueprint('competencia', __name__)
 
 
 @competencia_bp.route("/competencias", methods=["GET", "POST"])
 @login_required
+@solo_rh
 def competencias():
 
     if request.method == "POST":
@@ -30,6 +33,7 @@ def competencias():
 
 @competencia_bp.route("/competencias/eliminar/<int:id>", methods=["POST"])
 @login_required
+@solo_rh
 def eliminar_competencia(id):
     competencia = Competencia.query.get_or_404(id)
     db.session.delete(competencia)

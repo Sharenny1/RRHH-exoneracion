@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Puestos Disponibles</h2>
+        <p>Selecciona un puesto para postularte</p>
+    </div>
+    
+</div>
+
+<div class="table-card">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Nombre</th>
+                <th>Nivel Riesgo</th>
+                <th>Salario</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for p in puestos %}
+                {% if p.estado == "Activo" %}
+                <tr>
+                    <td>PST-{{ p.id }}</td>
+                    <td class="bold">{{ p.nombre }}</td>
+                    <td>{{ p.nivel_riesgo }}</td>
+                    <td>
+                        ${{ "%.2f"|format(p.salario_min) }} -
+                        ${{ "%.2f"|format(p.salario_max) }}
+                    </td>
+
+                    <td>
+                        <form action="{{ url_for('candidato.postular', id=p.id) }}"
+                              method="POST"
+                              style="display:inline;">
+                            <button type="submit" class="btn-primary">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                Postularme
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}

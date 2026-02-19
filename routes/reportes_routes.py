@@ -2,12 +2,14 @@ from flask import Blueprint, render_template, request
 from flask_login import login_required
 from models import Empleado
 from datetime import datetime
+from utils import solo_rh
 
 reporte_bp = Blueprint('reporte', __name__)
 
 
 @reporte_bp.route("/reportes", methods=["GET", "POST"])
 @login_required
+@solo_rh
 def reportes():
 
     empleados = []

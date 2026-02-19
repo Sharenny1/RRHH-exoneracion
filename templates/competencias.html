@@ -66,10 +66,14 @@
 
 <div id="editModal" class="modal">
     <div class="modal-content">
-        <div class="modal-header">
-            <h3>Editar Competencia</h3>
-            <span class="close" onclick="closeModal()">&times;</span>
-        </div>
+
+        <button type="button"
+                class="close-btn"
+                onclick="closeModal('editModal')">
+            ×
+        </button>
+
+        <h3>Editar Competencia</h3>
 
         <form method="POST" id="editForm">
             <input type="hidden" name="id" id="edit-id">
@@ -86,11 +90,13 @@
                     <option value="Inactivo">Inactivo</option>
                 </select>
             </div>
-            
+
             <button type="submit" class="btn-primary">Guardar</button>
         </form>
+
     </div>
 </div>
+
 <script src="{{ url_for('static', filename='js/competencias.js') }}"></script>
 
 

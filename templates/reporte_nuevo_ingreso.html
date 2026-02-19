@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Reporte de Nuevo Ingreso</h2>
+        <p>Empleados por rango de fechas</p>
+    </div>
+</div>
+
+<div class="table-card">
+
+    <!-- FORMULARIO -->
+    <form method="POST" style="margin-bottom:20px;">
+        <div style="display:flex; gap:15px; align-items:center;">
+
+            <div>
+                <label>Fecha Inicio</label>
+                <input type="date" name="fecha_inicio" required>
+            </div>
+
+            <div>
+                <label>Fecha Fin</label>
+                <input type="date" name="fecha_fin" required>
+            </div>
+
+            <button class="btn-primary" type="submit">
+                Generar Reporte
+            </button>
+
+        </div>
+    </form>
+
+    <!-- TABLA RESULTADOS -->
+    {% if empleados %}
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Puesto</th>
+                <th>Departamento</th>
+                <th>Fecha Ingreso</th>
+                <th>Salario</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for e in empleados %}
+            <tr>
+                <td>{{ e.nombre }}</td>
+                <td>{{ e.puesto }}</td>
+                <td>{{ e.departamento }}</td>
+                <td>{{ e.fecha_ingreso.strftime("%Y-%m-%d") }}</td>
+                <td>${{ "{:,.2f}".format(e.salario_mensual) }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
+
+</div>
+
+{% endblock %}

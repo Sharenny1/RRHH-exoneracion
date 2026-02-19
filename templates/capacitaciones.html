@@ -16,55 +16,55 @@
 <div class="table-card">
     <table class="custom-table">
         <thead>
-            <tr>
-                <th>ID</th>
-                <th>Descripción</th>
-                <th>Estado</th>
-                <th class="acciones-cell">Acciones</th>
-            </tr>
-        </thead>
+    <tr>
+        <th>ID</th>
+        <th>Descripción</th>
+        <th>Nivel</th>
+        <th>Desde</th>
+        <th>Hasta</th>
+        <th>Institución</th>
+        <th class="acciones-cell">Acciones</th>
+    </tr>
+</thead>
 
-        <tbody>
-            {% for cap in capacitaciones %}
-            <tr>
-                <td>CAP-{{ cap.id }}</td>
+<tbody>
+    {% for cap in capacitaciones %}
+    <tr>
+        <td>CAP-{{ cap.id }}</td>
+        <td class="bold">{{ cap.descripcion }}</td>
+        <td>{{ cap.nivel }}</td>
+        <td>{{ cap.fecha_desde.strftime('%d/%m/%Y') }}</td>
+        <td>{{ cap.fecha_hasta.strftime('%d/%m/%Y') }}</td>
+        <td>{{ cap.institucion }}</td>
 
-                <td class="bold">
-                    {{ cap.nombre }}
-                </td>
+        <td class="acciones-cell">
 
-                <td>
-                    {% if cap.estado == "Activo" %}
-                        <span class="badge-active">Activo</span>
-                    {% else %}
-                        <span class="badge-inactive">Inactivo</span>
-                    {% endif %}
-                </td>
+            <a href="#"
+               class="icon-edit"
+               onclick="editCapModal(
+                    '{{ cap.id }}',
+                    '{{ cap.descripcion }}',
+                    '{{ cap.nivel }}',
+                    '{{ cap.fecha_desde }}',
+                    '{{ cap.fecha_hasta }}',
+                    '{{ cap.institucion }}'
+               )">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </a>
 
-                <td class="acciones-cell">
+            <form action="{{ url_for('capacitacion.eliminar_capacitacion', id=cap.id) }}"
+                  method="POST"
+                  style="display:inline;">
+                <button type="submit" class="icon-delete">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+            </form>
 
-                    <!-- EDITAR -->
-                    <a href="#"
-                       class="icon-edit"
-                       onclick="editCapModal('{{ cap.id }}',
-                                            '{{ cap.nombre }}',
-                                            '{{ cap.estado }}')">
-                        <i class="fa-solid fa-pen-to-square"></i>
-                    </a>
+        </td>
+    </tr>
+    {% endfor %}
+</tbody>
 
-                    <!-- ELIMINAR -->
-                    <form action="{{ url_for('capacitacion.eliminar_capacitacion', id=cap.id) }}"
-                          method="POST"
-                          style="display:inline;">
-                        <button type="submit" class="icon-delete">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </form>
-
-                </td>
-            </tr>
-            {% endfor %}
-        </tbody>
     </table>
 </div>
 
@@ -83,26 +83,46 @@
 
         <form method="POST">
 
-            <input type="hidden" name="id" id="capId">
+    <input type="hidden" name="id" id="capId">
 
-            <div class="form-group">
-                <label>Descripción</label>
-                <input type="text" name="nombre" id="capNombre" required>
-            </div>
+    <div class="form-group">
+        <label>Descripción</label>
+        <input type="text" name="descripcion" id="capDescripcion" required>
+    </div>
 
-            <div class="form-group">
-                <label>Estado</label>
-                <select name="estado" id="capEstado">
-                    <option value="Activo">Activo</option>
-                    <option value="Inactivo">Inactivo</option>
-                </select>
-            </div>
+    <div class="form-group">
+        <label>Nivel</label>
+        <select name="nivel" id="capNivel" required>
+            <option value="Grado">Grado</option>
+            <option value="Postgrado">Postgrado</option>
+            <option value="Maestría">Maestría</option>
+            <option value="Doctorado">Doctorado</option>
+            <option value="Técnico">Técnico</option>
+            <option value="Gestión">Gestión</option>
+        </select>
+    </div>
 
-            <button type="submit" class="btn-primary">
-                Guardar
-            </button>
+    <div class="form-group">
+        <label>Fecha Desde</label>
+        <input type="date" name="fecha_desde" id="capFechaDesde" required>
+    </div>
 
-        </form>
+    <div class="form-group">
+        <label>Fecha Hasta</label>
+        <input type="date" name="fecha_hasta" id="capFechaHasta" required>
+    </div>
+
+    <div class="form-group">
+        <label>Institución</label>
+        <input type="text" name="institucion" id="capInstitucion" required>
+    </div>
+
+    <button type="submit" class="btn-primary">
+        Guardar
+    </button>
+
+</form>
+
 
     </div>
 </div>

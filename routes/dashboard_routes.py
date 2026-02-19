@@ -1,5 +1,6 @@
 from flask import Blueprint, render_template
 from flask_login import login_required
+from utils import solo_rh
 from models import (
     Candidato,
     Empleado,
@@ -14,6 +15,7 @@ dashboard_bp = Blueprint('dashboard', __name__)
 
 @dashboard_bp.route("/dashboard")
 @login_required
+@solo_rh
 def dashboard():
 
     return render_template(

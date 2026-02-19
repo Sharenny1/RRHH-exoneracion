@@ -548,6 +548,16 @@ body {
     cursor: pointer;
 }
 
+.modal-content {
+    position: relative;  /* MUY IMPORTANTE */
+    background: white;
+    padding: 40px 30px;
+    border-radius: 12px;
+    width: 600px;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
 
 /* ==============================
    editar competencias
@@ -580,6 +590,13 @@ body {
     border-radius: 12px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.1);
 }
+
+.modal-large {
+    width: 650px;
+    max-height: 85vh;
+    overflow-y: auto;
+}
+
 
 .modal-header {
     display: flex;
@@ -633,7 +650,7 @@ BOTON ELIMINAR
     border: none;
     cursor: pointer;
     font-size: 18px;
-    margin: 0 8px;
+    margin: 0 2px;
     transition: transform 0.2s ease;
 }
 
@@ -664,3 +681,137 @@ BOTON ELIMINAR
     margin: 0 6px;
 }
     
+/*----x------*/
+.close-btn {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    width: 32px;
+    height: 32px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background: #f5f5f5;
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: bold;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.close-btn:hover {
+    background: #e2e2e2;
+}
+
+
+.acciones-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.acciones-wrapper a,
+.acciones-wrapper button {
+    font-size: 18px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.acciones-wrapper a:hover,
+.acciones-wrapper button:hover {
+    transform: scale(1.15);
+    opacity: 0.8;
+}
+
+/* Colores */
+.icon-edit i {
+    color: #2d7ef7;
+}
+
+.icon-delete i {
+    color: #e74c3c;
+}
+
+.icon-select i {
+    color: #2ecc71;
+}
+
+.icon-reject i {
+    color: #e74c3c;
+}
+
+
+/* ==============================
+   MEJORAS VISUALES TABLA
+================================ */
+
+.custom-table tbody tr:hover {
+    background: #f8fafc;
+    transition: 0.2s ease;
+}
+
+/* Ajuste ancho acciones */
+.custom-table th:last-child,
+.custom-table td:last-child {
+    width: 200px;
+    text-align: center;
+}
+
+/* Badges nuevos */
+.badge-pending {
+    background: #fef9c3;
+    color: #854d0e;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.badge-hired {
+    background: #dcfce7;
+    color: #166534;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.badge-rejected {
+    background: #fee2e2;
+    color: #991b1b;
+    padding: 6px 14px;
+    border-radius: 50px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+
+.acciones-wrapper {
+    display: flex;
+    flex-direction: column; /* 🔥 ahora vertical */
+    gap: 6px;
+}
+
+.acciones-top,
+.acciones-bottom {
+    display: flex;
+    gap: 8px;
+}
+
+.acciones-wrapper {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.acciones-wrapper a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}

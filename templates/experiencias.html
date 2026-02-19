@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Experiencia Laboral</h2>
+        <p>Gestión de experiencias laborales</p>
+    </div>
+
+    <button class="btn-new" onclick="openExpModal()">
+        + Nueva Experiencia
+    </button>
+</div>
+
+<div class="table-card">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>Candidato</th>
+                <th>Empresa</th>
+                <th>Puesto</th>
+                <th>Desde</th>
+                <th>Hasta</th>
+                <th>Salario</th>
+                <th class="acciones-cell">Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for e in experiencias %}
+            <tr>
+                <td>{{ e.candidato.nombre }}</td>
+                <td>{{ e.empresa if e.empresa else "Pendiente" }}</td>
+<td>{{ e.puesto_ocupado if e.puesto_ocupado else "Pendiente" }}</td>
+
+
+                <td>{{ e.fecha_desde if e.fecha_desde else "—" }}</td>
+
+                <td>{{ e.fecha_hasta if e.fecha_hasta else "Actual" }}</td>
+                <td>
+    {% if e.salario %}
+        ${{ "{:,.2f}".format(e.salario) }}
+    {% else %}
+        —
+    {% endif %}
+</td>
+
+                
+
+                <td class="acciones-cell">
+    <button type="button"
+        class="icon-edit"
+        data-id="{{ e.id }}"
+        data-empresa="{{ e.empresa if e.empresa else '' }}"
+        data-puesto="{{ e.puesto_ocupado if e.puesto_ocupado else '' }}"
+        data-desde="{{ e.fecha_desde.strftime('%Y-%m-%d') if e.fecha_desde else '' }}"
+        data-hasta="{{ e.fecha_hasta.strftime('%Y-%m-%d') if e.fecha_hasta else '' }}"
+        data-salario="{{ e.salario if e.salario else '' }}"
+        onclick="openEditExpModal(this)">
+        <i class="fa-solid fa-pen-to-square"></i>
+    </button>
+
+    <form action="{{ url_for('experiencia.eliminar_experiencia', id=e.id) }}"
+          method="POST">
+        <button class="icon-delete">
+            <i class="fa-solid fa-trash"></i>
+        </button>
+    </form>
+</td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="expModal">
+    <div class="modal-content modal-medium">
+
+        <div class="modal-header">
+            <h3>Nueva Experiencia</h3>
+            <button onclick="closeExpModal()">✖</button>
+        </div>
+
+        <form method="POST">
+
+            {% if current_user.rol == "RH" %}
+<div class="form-group">
+    <label>Candidato</label>
+    <select name="candidato_id" required>
+        {% for c in candidatos %}
+            <option value="{{ c.id }}">{{ c.nombre }}</option>
+        {% endfor %}
+    </select>
+</div>
+{% endif %}
+
+
+            <div class="form-group">
+                <label>Empresa</label>
+                <input type="text" name="empresa" required>
+            </div>
+
+            <div class="form-group">
+                <label>Puesto Ocupado</label>
+                <input type="text" name="puesto" required>
+            </div>
+
+            <div class="form-group">
+                <label>Fecha Desde</label>
+                <input type="date" name="fecha_desde" required>
+            </div>
+
+            <div class="form-group">
+                <label>Fecha Hasta</label>
+                <input type="date" name="fecha_hasta">
+            </div>
+
+            <div class="form-group">
+                <label>Salario</label>
+                <input type="number" step="0.01" name="salario" required>
+            </div>
+
+            <button class="btn-primary">Guardar</button>
+
+        </form>
+    </div>
+</div>
+
+<script src="{{ url_for('static', filename='js/experiencias.js') }}"></script>
+
+{% endblock %}

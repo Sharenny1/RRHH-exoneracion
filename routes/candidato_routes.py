@@ -1,90 +1,217 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
-from flask_login import login_required
-from datetime import datetime
+from flask import Blueprint, render_template, request, redirect, url_for
+from flask_login import login_required, current_user
 from models import db, Candidato, Empleado
+from utils import solo_rh
+from datetime import datetime
 
-candidato_bp = Blueprint("candidato_bp", __name__)
+candidato_bp = Blueprint("candidato", __name__)
 
-# ==============================
-# LISTAR CANDIDATOS
-# ==============================
-@candidato_bp.route("/candidatos")
+# ==========================================
+# VISTA COMPARTIDA (RH + POSTULANTE)
+# ==========================================
+
+@candidato_bp.route("/candidatos", methods=["GET", "POST"])
 @login_required
-def listar_candidatos():
-    candidatos = Candidato.query.filter_by(estado="Postulante").all()
-    return render_template("candidatos/listar.html", candidatos=candidatos)
+def candidatos():
 
-
-# ==============================
-# CREAR CANDIDATO
-# ==============================
-@candidato_bp.route("/candidatos/nuevo", methods=["GET", "POST"])
-@login_required
-def nuevo_candidato():
-
+    # =========================
+    # POST
+    # =========================
     if request.method == "POST":
-        nuevo = Candidato(
-            cedula=request.form["cedula"],
-            nombre=request.form["nombre"],
-            puesto_aspira=request.form["puesto_aspira"],
-            departamento=request.form["departamento"],
-            salario_aspira=request.form["salario_aspira"],
-            competencias=request.form["competencias"],
-            capacitaciones=request.form["capacitaciones"],
-            experiencia=request.form["experiencia"],
-            recomendado_por=request.form["recomendado_por"],
-            estado="Postulante"
-        )
 
-        db.session.add(nuevo)
+        candidato_id = request.form.get("id")
+
+        cedula = request.form.get("cedula")
+        nombre = request.form.get("nombre")
+        puesto = request.form.get("puesto")
+        departamento = request.form.get("departamento")
+        salario = float(request.form.get("salario"))
+
+        competencias = request.form.get("competencias")
+        capacitaciones = request.form.get("capacitaciones")
+        experiencia = request.form.get("experiencia")
+        recomendado = request.form.get("recomendado")
+
+        # =====================
+        # SI ES RH
+        # =====================
+        if current_user.rol == "RH":
+
+            estado = request.form.get("estado")
+
+            if candidato_id:
+                candidato = Candidato.query.get_or_404(candidato_id)
+
+                candidato.cedula = cedula
+                candidato.nombre = nombre
+                candidato.puesto_aspira = puesto
+                candidato.departamento = departamento
+                candidato.salario_aspira = salario
+                candidato.competencias = competencias
+                candidato.capacitaciones = capacitaciones
+                candidato.experiencia = experiencia
+                candidato.recomendado_por = recomendado
+                if candidato.estado == "Contratado" and estado in ["Activo", "Inactivo"]:
+                    candidato.estado = estado
+                else:
+                    candidato.estado = estado
+
+
+            else:
+                nuevo = Candidato(
+                    usuario_id=current_user.id,
+                    cedula=cedula,
+                    nombre=nombre,
+                    puesto_aspira=puesto,
+                    departamento=departamento,
+                    salario_aspira=salario,
+                    competencias=competencias,
+                    capacitaciones=capacitaciones,
+                    experiencia=experiencia,
+                    recomendado_por=recomendado,
+                    estado=estado
+                )
+
+                db.session.add(nuevo)
+
+        # =====================
+        # SI ES POSTULANTE
+        # =====================
+        else:
+
+            existente = Candidato.query.filter_by(
+                usuario_id=current_user.id
+            ).first()
+
+            if existente:
+                # ACTUALIZA SU PROPIO REGISTRO
+                existente.cedula = cedula
+                existente.nombre = nombre
+                existente.puesto_aspira = puesto
+                existente.departamento = departamento
+                existente.salario_aspira = salario
+                existente.competencias = competencias
+                existente.capacitaciones = capacitaciones
+                existente.experiencia = experiencia
+                existente.recomendado_por = recomendado
+
+                # Siempre pendiente
+                existente.estado = "Pendiente"
+
+            else:
+                # CREA SU REGISTRO
+                nuevo = Candidato(
+                    usuario_id=current_user.id,
+                    cedula=cedula,
+                    nombre=nombre,
+                    puesto_aspira=puesto,
+                    departamento=departamento,
+                    salario_aspira=salario,
+                    competencias=competencias,
+                    capacitaciones=capacitaciones,
+                    recomendado_por=recomendado,
+                    estado="Pendiente"
+                )
+
+                db.session.add(nuevo)
+                db.session.flush()  #  IMPORTANTE para obtener el ID antes del commit
+
+                # CREAR EXPERIENCIA AUTOMÁTICA
+                from models import ExperienciaLaboral
+
+                nueva_exp = ExperienciaLaboral(
+                candidato_id=nuevo.id,
+                empresa=None,
+                puesto_ocupado=None,
+                fecha_desde=None,
+                fecha_hasta=None,
+                salario=None
+            )
+
+
+                db.session.add(nueva_exp)
+
+
         db.session.commit()
+        return redirect(url_for("candidato.candidatos"))
 
-        flash("Candidato registrado correctamente", "success")
-        return redirect(url_for("candidato_bp.listar_candidatos"))
+    # =========================
+    # GET
+    # =========================
 
-    return render_template("candidatos/nuevo.html")
+    if current_user.rol == "POSTULANTE":
+        lista = Candidato.query.filter_by(
+            usuario_id=current_user.id
+        ).all()
+    else:
+        lista = Candidato.query.all()
 
-
-# ==============================
-# PROCESO DE SELECCIÓN
-# ==============================
-@candidato_bp.route("/candidatos/seleccionar/<int:id>", methods=["POST"])
-@login_required
-def seleccionar_candidato(id):
-
-    candidato = Candidato.query.get_or_404(id)
-
-    # Crear nuevo empleado
-    nuevo_empleado = Empleado(
-        cedula=candidato.cedula,
-        nombre=candidato.nombre,
-        departamento=candidato.departamento,
-        puesto=candidato.puesto_aspira,
-        salario=candidato.salario_aspira,
-        fecha_ingreso=datetime.utcnow(),
-        estado="Activo"
-    )
-
-    # Cambiar estado del candidato
-    candidato.estado = "Seleccionado"
-
-    db.session.add(nuevo_empleado)
-    db.session.commit()
-
-    flash("Candidato seleccionado y convertido en empleado", "success")
-    return redirect(url_for("candidato_bp.listar_candidatos"))
+    return render_template("candidatos.html", candidatos=lista)
 
 
-# ==============================
-# ELIMINAR CANDIDATO
-# ==============================
+# ==========================================
+# ELIMINAR (SOLO RH)
+# ==========================================
+
 @candidato_bp.route("/candidatos/eliminar/<int:id>", methods=["POST"])
 @login_required
+@solo_rh
 def eliminar_candidato(id):
 
     candidato = Candidato.query.get_or_404(id)
     db.session.delete(candidato)
     db.session.commit()
 
-    flash("Candidato eliminado", "danger")
-    return redirect(url_for("candidato_bp.listar_candidatos"))
+    return redirect(url_for("candidato.candidatos"))
+
+
+# ==========================================
+# SELECCIONAR (CONTRATAR)
+# ==========================================
+
+@candidato_bp.route("/candidatos/seleccionar/<int:id>")
+@login_required
+@solo_rh
+def seleccionar_candidato(id):
+
+    candidato = Candidato.query.get_or_404(id)
+
+    # Crear empleado
+    nuevo_empleado = Empleado(
+        cedula=candidato.cedula,
+        nombre=candidato.nombre,
+        fecha_ingreso=datetime.today(),
+        departamento=candidato.departamento,
+        puesto=candidato.puesto_aspira,
+        salario_mensual=candidato.salario_aspira,
+        estado="Activo"
+    )
+
+    db.session.add(nuevo_empleado)
+
+    # Cambiar estado candidato
+    candidato.estado = "Contratado"
+    candidato.fecha_proceso = datetime.today()
+
+    db.session.commit()
+
+    return redirect(url_for("candidato.candidatos"))
+
+
+# ==========================================
+# RECHAZAR
+# ==========================================
+
+@candidato_bp.route("/candidatos/rechazar/<int:id>")
+@login_required
+@solo_rh
+def rechazar_candidato(id):
+
+    candidato = Candidato.query.get_or_404(id)
+
+    candidato.estado = "Rechazado"
+    candidato.fecha_proceso = datetime.today()
+
+    db.session.commit()
+
+    return redirect(url_for("candidato.candidatos"))

@@ -12,6 +12,7 @@ from routes.idioma_routes import idioma_bp
 from routes.puesto_routes import puesto_bp
 from routes.capacitacion_routes import capacitacion_bp
 from routes.dashboard_routes import dashboard_bp
+from routes.experiencia_routes import experiencia_bp
 
 
 # =========================
@@ -49,6 +50,7 @@ app.register_blueprint(competencia_bp)
 app.register_blueprint(idioma_bp)
 app.register_blueprint(puesto_bp)
 app.register_blueprint(capacitacion_bp)
+app.register_blueprint(experiencia_bp)
 
 
 
