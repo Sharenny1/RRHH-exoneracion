@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block content %}
+
+<h1 class="page-title">Dashboard</h1>
+<p class="subtitle">Resumen del sistema de Reclutamiento y Selección</p>
+
+<div class="cards">
+
+    <!-- FILA 1 -->
+    <div class="card blue">
+        <h4>Candidatos</h4>
+        <h2>{{ total_candidatos }}</h2>
+        <p>Registrados</p>
+    </div>
+
+    <div class="card green">
+        <h4>Empleados Activos</h4>
+        <h2>{{ total_empleados }}</h2>
+        <p>En nómina</p>
+    </div>
+
+    <div class="card orange">
+        <h4>Puestos Activos</h4>
+        <h2>{{ total_puestos }}</h2>
+        <p>Disponibles</p>
+    </div>
+
+    <div class="card purple">
+        <h4>Competencias</h4>
+        <h2>{{ total_competencias }}</h2>
+        <p>Registradas</p>
+    </div>
+
+    <!-- FILA 2 -->
+    <div class="card teal">
+        <h4>Idiomas</h4>
+        <h2>{{ total_idiomas }}</h2>
+        <p>Disponibles</p>
+    </div>
+
+    <div class="card pink">
+        <h4>Capacitaciones</h4>
+        <h2>{{ total_capacitaciones }}</h2>
+        <p>Registradas</p>
+    </div>
+
+    <div class="card gray">
+        <h4>Actividad</h4>
+        <h2 class="status-ok">Operativo</h2>
+        <p>Sistema funcionando</p>
+    </div>
+
+</div>
+
+{% endblock %}

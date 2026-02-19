@@ -1,0 +1,114 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h2>Idiomas</h2>
+        <p>Gestión de idiomas del sistema</p>
+    </div>
+
+    <button class="btn-new" id="btnNuevoIdioma">
+        + Nuevo Idioma
+    </button>
+</div>
+
+
+<div class="table-card">
+    <table class="custom-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Descripción</th>
+                <th>Estado</th>
+                <th class="acciones-cell">Acciones</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for idioma in idiomas %}
+            <tr>
+                <td>ID-{{ idioma.id }}</td>
+
+                <td class="bold">
+                    {{ idioma.nombre }}
+                </td>
+
+                <td>
+                    {% if idioma.estado == "Activo" %}
+                        <span class="badge-active">Activo</span>
+                    {% else %}
+                        <span class="badge-inactive">Inactivo</span>
+                    {% endif %}
+                </td>
+
+                <td class="acciones-cell">
+
+                    <!-- EDITAR -->
+                    <a href="#"
+                       class="icon-edit"
+                       onclick="editIdiomaModal('{{ idioma.id }}',
+                                                '{{ idioma.nombre }}',
+                                                '{{ idioma.estado }}')">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                    </a>
+
+                    <!-- ELIMINAR -->
+                    <form action="{{ url_for('idioma.eliminar_idioma', id=idioma.id) }}"
+                          method="POST"
+                          style="display:inline;">
+                        <button type="submit" class="icon-delete">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </form>
+
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+<!-- =========================
+     MODAL CREAR / EDITAR
+========================== -->
+
+<div class="modal" id="idiomaModal">
+    <div class="modal-content">
+
+        <div class="modal-header">
+            <h3 id="idiomaModalTitle">Nuevo Idioma</h3>
+            <button type="button" onclick="closeIdiomaModal()">✖</button>
+        </div>
+
+        <form method="POST">
+
+            <!-- Hidden para saber si es edición -->
+            <input type="hidden" name="id" id="idiomaId">
+
+            <div class="form-group">
+                <label>Descripción</label>
+                <input type="text" name="nombre" id="idiomaNombre" required>
+            </div>
+
+            <div class="form-group">
+                <label>Estado</label>
+                <select name="estado" id="idiomaEstado">
+                    <option value="Activo">Activo</option>
+                    <option value="Inactivo">Inactivo</option>
+                </select>
+            </div>
+
+            <button type="submit" class="btn-primary">
+                Guardar
+            </button>
+
+        </form>
+
+    </div>
+</div>
+
+
+<script src="{{ url_for('static', filename='js/idiomas.js') }}"></script>
+
+{% endblock %}

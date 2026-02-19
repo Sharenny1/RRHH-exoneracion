@@ -1,0 +1,34 @@
+<table class="table table-hover table-striped">
+<thead class="table-dark">
+<tr>
+<th>Nombre</th>
+<th>Puesto</th>
+<th>Salario</th>
+<th>Estado</th>
+<th>Acciones</th>
+</tr>
+</thead>
+<tbody>
+
+{% for c in candidatos %}
+<tr>
+<td>{{ c.nombre }}</td>
+<td>{{ c.puesto_aspira }}</td>
+<td>RD$ {{ "{:,.0f}".format(c.salario_aspira) }}</td>
+<td>
+    {% if c.estado == "Pendiente" %}
+        <span class="badge bg-warning">Pendiente</span>
+    {% else %}
+        <span class="badge bg-success">Seleccionado</span>
+    {% endif %}
+</td>
+<td>
+    <a href="/candidatos/seleccionar/{{ c.id }}" class="btn btn-sm btn-primary">
+        Seleccionar
+    </a>
+</td>
+</tr>
+{% endfor %}
+
+</tbody>
+</table>
