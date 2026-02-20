@@ -11,7 +11,32 @@
         + Nuevo Candidato
     </button>
 </div>
+<div class="filtro-container">
+    <form method="GET" class="filtro-form">
 
+        <input type="text" name="puesto"
+               placeholder="Buscar por puesto"
+               value="{{ request.args.get('puesto', '') }}">
+
+        <input type="text" name="competencia"
+               placeholder="Buscar por competencia"
+               value="{{ request.args.get('competencia', '') }}">
+
+        <input type="text" name="capacitacion"
+               placeholder="Buscar por capacitación"
+               value="{{ request.args.get('capacitacion', '') }}">
+
+        <button type="submit" class="btn-primary">
+            Filtrar
+        </button>
+
+        <a href="{{ url_for('candidato.candidatos') }}"
+           class="btn-clear">
+           Limpiar
+        </a>
+
+    </form>
+</div>
 <div class="table-card">
     <table class="custom-table">
         <thead>
@@ -30,35 +55,38 @@
         </thead>
 
         <tbody>
-    {% for c in candidatos %}
-    <tr>
-        <td>CND-{{ c.id }}</td>
-        <td>
-    {{ c.cedula[:3] }}-{{ c.cedula[3:10] }}-{{ c.cedula[10:] }}
-</td>
+{% for c in candidatos %}
 
-        <td class="bold">{{ c.nombre }}</td>
-        <td>{{ c.puesto_aspira }}</td>
-        <td>{{ c.departamento }}</td>
-        <td>${{ "{:,.2f}".format(c.salario_aspira) }}</td>
+<tr>
+    <td>CND-{{ c.id }}</td>
 
-        <td>
-            {% if c.estado == "Pendiente" %}
-                <span class="badge-pending">Pendiente</span>
-            {% elif c.estado == "Contratado" %}
-                <span class="badge-hired">Contratado</span>
-            {% elif c.estado == "Rechazado" %}
-                <span class="badge-rejected">Rechazado</span>
-            {% else %}
-                <span class="badge-inactive">{{ c.estado }}</span>
-            {% endif %}
-        </td>
+    <td>
+        {{ c.cedula[:3] }}-{{ c.cedula[3:10] }}-{{ c.cedula[10:] }}
+    </td>
 
-        {% if current_user.rol == "RH" %}
+    <td class="bold">{{ c.nombre }}</td>
+    <td>{{ c.puesto_aspira }}</td>
+    <td>{{ c.departamento }}</td>
+    <td>${{ "{:,.2f}".format(c.salario_aspira) }}</td>
+
+    <td>
+        {% if c.estado == "Pendiente" %}
+            <span class="badge-pending">Pendiente</span>
+        {% elif c.estado == "Contratado" %}
+            <span class="badge-hired">Contratado</span>
+        {% elif c.estado == "Rechazado" %}
+            <span class="badge-rejected">Rechazado</span>
+        {% else %}
+            <span class="badge-inactive">{{ c.estado }}</span>
+        {% endif %}
+    </td>
+
+    {% if current_user.rol == "RH" %}
 <td class="acciones-cell">
     <div class="acciones-wrapper">
 
         {% if c.estado == "Pendiente" %}
+
             <a href="{{ url_for('candidato.seleccionar_candidato', id=c.id) }}"
                class="icon-select"
                title="Contratar">
@@ -70,10 +98,28 @@
                title="Rechazar">
                <i class="fa-solid fa-user-xmark"></i>
             </a>
+
+        {% elif c.estado == "Rechazado" %}
+
+            <form action="{{ url_for('candidato.eliminar_candidato', id=c.id) }}"
+                  method="POST"
+                  style="display:inline;">
+
+                <button type="submit"
+                        class="icon-delete"
+                        title="Eliminar"
+                        onclick="return confirm('¿Seguro que deseas eliminar este candidato?');">
+                    <i class="fa-solid fa-trash"></i>
+                </button>
+
+            </form>
+
         {% else %}
+
             <span style="color:#94a3b8; font-size:13px;">
                 Sin acciones
             </span>
+
         {% endif %}
 
     </div>
@@ -81,9 +127,43 @@
 {% endif %}
 
 
-    </tr>
-    {% endfor %}
+
+</tr>
+
+<!-- FILA DE DETALLE -->
+<tr class="detalle-row">
+    <td colspan="{% if current_user.rol == 'RH' %}8{% else %}7{% endif %}">
+        <div class="detalle-grid">
+
+            <div class="detalle-item">
+                <span class="detalle-label">Competencias</span>
+                <span class="detalle-value">
+                    {{ c.competencias or "—" }}
+                </span>
+            </div>
+
+            <div class="detalle-item">
+                <span class="detalle-label">Capacitaciones</span>
+                <span class="detalle-value">
+                    {{ c.capacitaciones or "—" }}
+                </span>
+            </div>
+
+            <div class="detalle-item">
+                <span class="detalle-label">Recomendado por</span>
+                <span class="detalle-value">
+                    {{ c.recomendado_por or "—" }}
+                </span>
+            </div>
+
+        </div>
+    </td>
+</tr>
+
+
+{% endfor %}
 </tbody>
+
 
 
     </table>
@@ -121,7 +201,7 @@
 
             <div class="form-group">
                 <label>Salario al que aspira</label>
-                <input type="number" step="0.01" name="salario" id="candidatoSalario" required>
+                <input type="number" step="0.01" min="0" name="salario" id="candidatoSalario" required>
             </div>
 
             <div class="form-group">

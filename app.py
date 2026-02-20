@@ -64,3 +64,8 @@ if __name__ == "__main__":
     app.run(debug=True)
 
 
+@app.template_filter('rd')
+def formato_rd(valor):
+    if valor is None:
+        return "RD$ 0.00"
+    return f"RD$ {abs(valor):,.2f}"

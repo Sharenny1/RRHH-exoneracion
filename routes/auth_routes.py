@@ -22,11 +22,11 @@ def login():
 
             next_page = request.args.get("next")
 
-            # Si es RH y hay next (como dashboard), lo respetamos
+            
             if user.rol == "RH":
                 return redirect(next_page or url_for("dashboard.dashboard"))
 
-            # Si es Postulante, ignoramos cualquier next
+         
             return redirect(url_for("candidato.candidatos"))
 
 

@@ -15,7 +15,7 @@ candidato_bp = Blueprint("candidato", __name__)
 def candidatos():
 
     # =========================
-    # POST
+    # POST (CREAR / EDITAR)
     # =========================
     if request.method == "POST":
 
@@ -25,8 +25,7 @@ def candidatos():
         nombre = request.form.get("nombre")
         puesto = request.form.get("puesto")
         departamento = request.form.get("departamento")
-        salario = float(request.form.get("salario"))
-
+        salario = abs(float(request.form.get("salario")))
         competencias = request.form.get("competencias")
         capacitaciones = request.form.get("capacitaciones")
         experiencia = request.form.get("experiencia")
@@ -51,11 +50,7 @@ def candidatos():
                 candidato.capacitaciones = capacitaciones
                 candidato.experiencia = experiencia
                 candidato.recomendado_por = recomendado
-                if candidato.estado == "Contratado" and estado in ["Activo", "Inactivo"]:
-                    candidato.estado = estado
-                else:
-                    candidato.estado = estado
-
+                candidato.estado = estado
 
             else:
                 nuevo = Candidato(
@@ -71,7 +66,6 @@ def candidatos():
                     recomendado_por=recomendado,
                     estado=estado
                 )
-
                 db.session.add(nuevo)
 
         # =====================
@@ -84,7 +78,6 @@ def candidatos():
             ).first()
 
             if existente:
-                # ACTUALIZA SU PROPIO REGISTRO
                 existente.cedula = cedula
                 existente.nombre = nombre
                 existente.puesto_aspira = puesto
@@ -94,12 +87,9 @@ def candidatos():
                 existente.capacitaciones = capacitaciones
                 existente.experiencia = experiencia
                 existente.recomendado_por = recomendado
-
-                # Siempre pendiente
                 existente.estado = "Pendiente"
 
             else:
-                # CREA SU REGISTRO
                 nuevo = Candidato(
                     usuario_id=current_user.id,
                     cedula=cedula,
@@ -109,42 +99,41 @@ def candidatos():
                     salario_aspira=salario,
                     competencias=competencias,
                     capacitaciones=capacitaciones,
+                    experiencia=experiencia,
                     recomendado_por=recomendado,
                     estado="Pendiente"
                 )
-
                 db.session.add(nuevo)
-                db.session.flush()  #  IMPORTANTE para obtener el ID antes del commit
-
-                # CREAR EXPERIENCIA AUTOMÁTICA
-                from models import ExperienciaLaboral
-
-                nueva_exp = ExperienciaLaboral(
-                candidato_id=nuevo.id,
-                empresa=None,
-                puesto_ocupado=None,
-                fecha_desde=None,
-                fecha_hasta=None,
-                salario=None
-            )
-
-
-                db.session.add(nueva_exp)
-
 
         db.session.commit()
         return redirect(url_for("candidato.candidatos"))
 
     # =========================
-    # GET
+    # GET CON FILTROS
     # =========================
 
+    query = Candidato.query
+
+    # FILTRO POR PUESTO
+    puesto = request.args.get("puesto")
+    if puesto:
+        query = query.filter(Candidato.puesto_aspira.ilike(f"%{puesto}%"))
+
+    # FILTRO POR COMPETENCIA
+    competencia = request.args.get("competencia")
+    if competencia:
+        query = query.filter(Candidato.competencias.ilike(f"%{competencia}%"))
+
+    # FILTRO POR CAPACITACION
+    capacitacion = request.args.get("capacitacion")
+    if capacitacion:
+        query = query.filter(Candidato.capacitaciones.ilike(f"%{capacitacion}%"))
+
+    # FILTRO SEGÚN ROL
     if current_user.rol == "POSTULANTE":
-        lista = Candidato.query.filter_by(
-            usuario_id=current_user.id
-        ).all()
-    else:
-        lista = Candidato.query.all()
+        query = query.filter_by(usuario_id=current_user.id)
+
+    lista = query.all()
 
     return render_template("candidatos.html", candidatos=lista)
 
@@ -176,7 +165,6 @@ def seleccionar_candidato(id):
 
     candidato = Candidato.query.get_or_404(id)
 
-    # Crear empleado
     nuevo_empleado = Empleado(
         cedula=candidato.cedula,
         nombre=candidato.nombre,
@@ -189,7 +177,6 @@ def seleccionar_candidato(id):
 
     db.session.add(nuevo_empleado)
 
-    # Cambiar estado candidato
     candidato.estado = "Contratado"
     candidato.fecha_proceso = datetime.today()
 

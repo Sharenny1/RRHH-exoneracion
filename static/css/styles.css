@@ -2,12 +2,12 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
-    overflow: hidden; /* 🔥 elimina scroll global */
+    overflow: hidden; 
 }
 
 .layout {
     display: flex;
-    height: 100vh; /* altura exacta de la pantalla */
+    height: 100vh; 
 }
 
 
@@ -549,7 +549,7 @@ body {
 }
 
 .modal-content {
-    position: relative;  /* MUY IMPORTANTE */
+    position: relative;  
     background: white;
     padding: 40px 30px;
     border-radius: 12px;
@@ -792,7 +792,7 @@ BOTON ELIMINAR
 
 .acciones-wrapper {
     display: flex;
-    flex-direction: column; /* 🔥 ahora vertical */
+    flex-direction: column; 
     gap: 6px;
 }
 
@@ -814,4 +814,76 @@ BOTON ELIMINAR
     display: inline-flex;
     align-items: center;
     justify-content: center;
+}
+
+.detalle-row {
+    background-color: #f8fafc;
+}
+
+.detalle-candidato {
+    padding: 15px 25px;
+    font-size: 14px;
+    color: #475569;
+    line-height: 1.6;
+}
+
+.detalle-candidato strong {
+    color: #1e293b;
+}
+
+.detalle-row {
+    background: #f9fafb;
+}
+
+.detalle-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    padding: 15px 25px;
+    gap: 20px;
+    border-top: 1px solid #e2e8f0;
+}
+
+.detalle-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.detalle-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 4px;
+}
+
+.detalle-value {
+    font-size: 14px;
+    color: #1e293b;
+}
+
+.filtro-container {
+    margin: 20px 0;
+}
+
+.filtro-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filtro-form input {
+    padding: 8px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.btn-clear {
+    padding: 8px 14px;
+    background-color: #e2e8f0;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+    color: #334155;
 }

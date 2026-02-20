@@ -51,7 +51,7 @@ def experiencias():
         if exp_id:
             experiencia = ExperienciaLaboral.query.get_or_404(exp_id)
 
-            # Seguridad: si es postulante solo puede editar las suyas
+           
             if current_user.rol == "POSTULANTE":
                 candidato = Candidato.query.filter_by(
                     usuario_id=current_user.id

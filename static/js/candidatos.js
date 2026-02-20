@@ -54,7 +54,7 @@ function editCandidatoModal(id, cedula, nombre, puesto, depto, salario, comp, ca
     const recField = document.getElementById("candidatoRec");
     if (recField) recField.value = rec;
 
-    //  ESTA ES LA PARTE IMPORTANTE
+   
     const estadoField = document.getElementById("candidatoEstado");
     if (estadoField) {
         estadoField.value = estado;

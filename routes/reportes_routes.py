@@ -4,6 +4,7 @@ from models import Empleado
 from datetime import datetime
 from utils import solo_rh
 
+
 reporte_bp = Blueprint('reporte', __name__)
 
 

@@ -48,12 +48,19 @@
                         Candidatos
                     </a>
 
-                    <!-- ✅ EXPERIENCIA AGREGADO PARA RH -->
+                    <!-- EXPERIENCIA AGREGADO PARA RH -->
                     <a href="{{ url_for('experiencia.experiencias') }}"
                        class="menu-item {% if request.endpoint == 'experiencia.experiencias' %}active{% endif %}">
                         <span class="icon"><i class="fa-solid fa-briefcase"></i></span>
                         Experiencia
                     </a>
+
+                    <a href="{{ url_for('capacitacion.capacitaciones') }}"
+   class="menu-item {% if request.endpoint == 'capacitacion.capacitaciones' %}active{% endif %}">
+    <span class="icon"><i class="fa-solid fa-graduation-cap"></i></span>
+    Capacitaciones
+</a>
+
 
                     <a href="{{ url_for('competencia.competencias') }}"
                        class="menu-item {% if request.endpoint == 'competencia.competencias' %}active{% endif %}">
